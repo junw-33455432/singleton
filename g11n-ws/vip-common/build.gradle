@@ -1,0 +1,37 @@
+//Copyright 2019-2023 VMware, Inc.
+//SPDX-License-Identifier: EPL-2.0
+apply plugin: 'java'
+description = 'common tools module'
+
+configurations {
+    jar
+}
+
+dependencies {
+    implementation("org.apache.commons:commons-lang3:$commonsLangVersion")
+    implementation("commons-io:commons-io:$commonsIoVersion")
+    implementation("commons-codec:commons-codec:$commonsCodecVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.googlecode.json-simple:json-simple:$jsonSimpleVersion"){
+          exclude group: 'junit'
+    }
+    compileOnly("org.slf4j:slf4j-api:$slf4jVersion")
+    compileOnly("org.ehcache:ehcache:$ehCacheVersion")
+    compileOnly("javax.cache:cache-api:$cacheApiVersion")
+    
+}
+
+jar {
+    baseName = 'vip-common'
+    version = "$branchName"
+    classifier = "$buildNumber"
+}
+
+task copyCommonJars(type :Copy, dependsOn: jar) {
+    from "$buildDir/libs"
+    into "$rootDir/../publish/"
+    include "**/*.jar"
+}
+
+
+assemble.dependsOn.add copyCommonJars
